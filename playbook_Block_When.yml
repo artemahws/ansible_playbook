@@ -1,0 +1,29 @@
+- name: Install Apache and Upload my Web Page
+  hosts: all
+  become: yes
+
+# vars: - переменные
+# tasks: - список задач
+
+  vars:
+    source_file: ./Website/index.html
+    destin_file: /var/www/html
+
+  tasks:
+  - name: Install Apahce Web Server
+    apt: name=apache2 state=latest
+
+  - name: Copy file to Servers
+    copy: src={{ source_file }} dest={{ destin_file }} mode=0555
+    notify: Restart Apache after update
+
+#notify показывает что нужно сделать при каких-то условиях
+
+  - name: Start Web Service and ebable boot
+    service: name=apache2 state=started enabled=yes
+
+#handlers - задачи на выполнение при определенных условиях  
+
+  handlers:
+  - name: Restart Apache after update
+    service: name=apache2 state=restarted

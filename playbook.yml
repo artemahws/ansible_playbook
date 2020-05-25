@@ -1,0 +1,36 @@
+---
+- name: Work with Vars playbook
+  hosts: all
+  become: yes
+
+  vars:
+    message1: Hello
+    message2: World!
+    secret: hdjf2!fhfdjn@!#
+
+  tasks:
+    - name: Print var Secret
+      # debug - вызов задачи по отображению переменных (имеет 2-ва аргумента var и msg)
+      debug:
+        var: secret
+    # var - вывод заданной переменной
+
+    - name: Print msg
+      debug:
+        msg: "Print my secret {{ secret }}"
+
+    - name: Print var in file
+      # можно выводить переменные из файлов хостов и т.п.
+      debug:
+        msg: "Print var in file {{ owner }}"
+      #---owner--- переменная внутри файла inventory.yml
+    # set_fact - склейка переменых (1 сначала вносит, 2 вызываем debug на переменную)
+    - set_fact: full_message="{{ message1 }} {{ message2 }} from {{ owner }}"
+
+    - debug:
+        var: full_messgae
+    # сохранение вывода команды с сервера
+    - shell: uptime
+      register: results
+    - debug:
+      var: results.stdout
